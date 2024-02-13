@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - master  # Здесь укажите имя вашей основной ветки
+  pull_request:
+    types: [opened, synchronize, reopened]
 
 jobs:
   notify:
@@ -16,8 +18,13 @@ jobs:
     - name: Get diff of changes
       id: diff
       run: |
-        git fetch --no-tags --depth=1 origin +refs/heads/${{ github.event.inputs.from }}:refs/pull/${{ github.event.inputs.from }}
-        git diff --name-only ${{ github.event.inputs.from }}
+        if [ -z "${{ github.event.inputs.from }}" ]; then
+          from=main
+        else
+          from=${{ github.event.inputs.from }}
+        fi
+        git fetch --no-tags --depth=1 origin +refs/heads/${from}:refs/pull/${{ github.event.pull_request.number }}/head
+        git diff --name-only FETCH_HEAD
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
