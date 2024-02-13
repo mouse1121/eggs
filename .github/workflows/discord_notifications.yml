@@ -1,9 +1,6 @@
 name: Discord Notifications
 
 on:
-  push:
-    branches:
-      - master  # Здесь укажите имя вашей основной ветки
   pull_request:
     types: [opened, synchronize, reopened]
 
@@ -12,6 +9,10 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
+    - name: Check if pull request
+      run: echo "This is a pull request"
+      if: github.event_name == 'pull_request'
+
     - name: Check out code
       uses: actions/checkout@v4
       
