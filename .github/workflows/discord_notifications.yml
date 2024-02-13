@@ -19,6 +19,10 @@ jobs:
     - name: Get diff of changes
       id: diff
       run: |
+        if [ -z "${{ github.event.pull_request.number }}" ]; then
+          echo "No pull request number found, exiting..."
+          exit 0
+        fi
         if [ -z "${{ github.event.inputs.from }}" ]; then
           from=main
         else
