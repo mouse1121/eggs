@@ -1,1 +1,31 @@
-123
+name: Discord Notifications
+
+on:
+  push:
+    branches:
+      - master  # Здесь укажите имя вашей основной ветки
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Check out code
+      uses: actions/checkout@v2
+      
+    - name: Get diff of changes
+      id: diff
+      run: |
+        git fetch --no-tags --depth=1 origin +refs/heads/${{ github.event.inputs.from }}:refs/pull/${{ github.event.inputs.from }}
+        git diff --name-only ${{ github.event.inputs.from }}
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Send notification to Discord
+      uses: Ilshidur/action-discord@master
+      with:
+        webhook_url: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        color: '3066993'
+        title: 'New commits in the repository'
+        description: 'Changes were made to the following files:'
+        fields: ${{ steps.diff.outputs.files }}
