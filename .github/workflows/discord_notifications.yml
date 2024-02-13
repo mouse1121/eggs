@@ -1,38 +1,22 @@
 name: Discord Notifications
 
 on:
-  pull_request:
-    types: [opened, synchronize, reopened]
+  push:
+    branches:
+      - main
 
 jobs:
   notify:
     runs-on: ubuntu-latest
     
     steps:
-    - name: Check if pull request
-      run: echo "This is a pull request"
-      if: github.event_name == 'pull_request' && github.event.pull_request.number != null && github.event.pull_request.number != ''
-
     - name: Check out code
       uses: actions/checkout@v4
       
     - name: Get diff of changes
       id: diff
       run: |
-        if [ -z "${{ github.event.pull_request.number }}" ]; then
-          echo "No pull request number found, exiting..."
-          exit 0
-        fi
-        from=${{ github.event.inputs.from }}  # Устанавливаем значение from из входных данных
-        if [ -z "${from}" ]; then
-          from=main
-        fi
-        if [ -z "${from}" ]; then
-          echo "Invalid value for 'from', exiting..."
-          exit 1
-        fi
-        git fetch --no-tags --depth=1 origin +refs/heads/${from}:refs/pull/${{ github.event.pull_request.number }}/head
-        git diff --name-only FETCH_HEAD
+        git diff --name-only HEAD^ HEAD
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
