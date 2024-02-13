@@ -11,7 +11,7 @@ jobs:
     steps:
     - name: Check if pull request
       run: echo "This is a pull request"
-      if: github.event_name == 'pull_request' && github.event.pull_request.number != null
+      if: github.event_name == 'pull_request' && github.event.pull_request.number != null && github.event.pull_request.number != ''
 
     - name: Check out code
       uses: actions/checkout@v4
