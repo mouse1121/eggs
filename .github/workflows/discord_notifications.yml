@@ -23,10 +23,13 @@ jobs:
           echo "No pull request number found, exiting..."
           exit 0
         fi
-        if [ -z "${{ github.event.inputs.from }}" ]; then
+        from=${{ github.event.inputs.from }}  # Устанавливаем значение from из входных данных
+        if [ -z "${from}" ]; then
           from=main
-        else
-          from=${{ github.event.inputs.from }}
+        fi
+        if [ -z "${from}" ]; then
+          echo "Invalid value for 'from', exiting..."
+          exit 1
         fi
         git fetch --no-tags --depth=1 origin +refs/heads/${from}:refs/pull/${{ github.event.pull_request.number }}/head
         git diff --name-only FETCH_HEAD
