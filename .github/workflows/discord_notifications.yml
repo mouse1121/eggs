@@ -21,6 +21,14 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+    - name: Debug output
+      run: |
+        echo "Changed files:"
+        cat $GITHUB_EVENT_PATH
+        echo "Diff output:"
+        git diff
+      if: steps.diff.outputs.files != ''
+
     - name: Send notification to Discord
       if: steps.diff.outputs.files != ''
       uses: Ilshidur/action-discord@master
